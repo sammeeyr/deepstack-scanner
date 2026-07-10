@@ -28,6 +28,10 @@ except Exception as e:
     print(f"Failed to initialize Wappalyzer: {e}")
     wappalyzer = None
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the SiteForge Recon API. Visit /docs for the API documentation."}
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
