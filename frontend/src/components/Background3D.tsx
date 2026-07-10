@@ -28,7 +28,7 @@ function StarField(props: any) {
   // Generate 5000 random points in a sphere
   const sphere = useMemo(() => generatePointsInSphere(5000, 1.5), []);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (ref.current) {
       ref.current.rotation.x -= delta / 10;
       ref.current.rotation.y -= delta / 15;
