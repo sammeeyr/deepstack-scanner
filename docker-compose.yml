@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PORT=8000
+    # Add this to help python print immediately in docker
+    tty: true
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      # Exclude node_modules from host volume mapping
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    tty: true
