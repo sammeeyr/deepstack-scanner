@@ -1,35 +1,104 @@
 @import "tailwindcss";
 
 @theme {
-  --color-neon-blue: #00f3ff;
-  --color-neon-purple: #9d00ff;
-  --color-neon-pink: #ff00ea;
-  --color-dark-bg: #0a0a0f;
-  --color-glass: rgba(255, 255, 255, 0.05);
-  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-hacker-green: #00ff41;
+  --color-hacker-green-dark: #008f11;
+  --color-hacker-red: #ff003c;
+  --color-dark-bg: #030303;
+  --color-glass: rgba(0, 255, 65, 0.05);
+  --color-glass-border: rgba(0, 255, 65, 0.2);
 }
 
 @layer base {
   body {
-    @apply bg-dark-bg text-white antialiased overflow-x-hidden;
-    background-color: #050505;
-    background-image: 
-      radial-gradient(circle at 15% 50%, rgba(157, 0, 255, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.08) 0%, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-dark-bg text-[#00ff41] antialiased overflow-x-hidden;
+    background-color: #030303;
+    font-family: 'Fira Code', Consolas, Monaco, 'Courier New', Courier, monospace;
+    position: relative;
+  }
+  
+  /* CRT Scanlines */
+  body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 50;
+    pointer-events: none;
   }
 }
 
 @layer utilities {
   .glass-panel {
-    @apply bg-glass border border-glass-border backdrop-blur-md rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+    @apply bg-glass border border-glass-border backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,65,0.1)];
+  }
+  
+  .hacker-panel {
+    @apply border border-[#00ff41] bg-black/80;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.1);
   }
   
   .neon-text {
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
+    text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41;
+  }
+
+  .neon-text-red {
+    text-shadow: 0 0 5px #ff003c, 0 0 10px #ff003c;
   }
   
   .neon-border {
-    box-shadow: 0 0 10px rgba(157, 0, 255, 0.3), inset 0 0 10px rgba(157, 0, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.4), inset 0 0 10px rgba(0, 255, 65, 0.2);
+  }
+
+  .glitch-text {
+    position: relative;
+  }
+  .glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+  .glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+  }
+  .glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9;
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 83px, 0); }
+    20% { clip: rect(61px, 9999px, 53px, 0); }
+    40% { clip: rect(25px, 9999px, 97px, 0); }
+    60% { clip: rect(78px, 9999px, 11px, 0); }
+    80% { clip: rect(44px, 9999px, 72px, 0); }
+    100% { clip: rect(88px, 9999px, 32px, 0); }
+  }
+
+  @keyframes glitch-anim-2 {
+    0% { clip: rect(81px, 9999px, 15px, 0); }
+    20% { clip: rect(32px, 9999px, 91px, 0); }
+    40% { clip: rect(56px, 9999px, 24px, 0); }
+    60% { clip: rect(14px, 9999px, 78px, 0); }
+    80% { clip: rect(93px, 9999px, 44px, 0); }
+    100% { clip: rect(27px, 9999px, 63px, 0); }
   }
 }

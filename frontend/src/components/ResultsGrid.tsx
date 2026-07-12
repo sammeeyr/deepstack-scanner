@@ -21,11 +21,11 @@ export function ResultsGrid({ technologies }: ResultsGridProps) {
       className="mt-12 w-full max-w-6xl mx-auto"
     >
       <div className="flex items-center gap-4 mb-6">
-        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#00f3ff]/50 to-transparent"></div>
-        <h2 className="text-2xl font-light tracking-widest text-[#00f3ff] neon-text uppercase">
-          Discovered Tech Stack
+        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#00ff41]/50 to-transparent"></div>
+        <h2 className="text-2xl font-bold tracking-widest text-[#00ff41] neon-text uppercase">
+          [EXTRACTED_NODES]
         </h2>
-        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#00f3ff]/50 to-transparent"></div>
+        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#00ff41]/50 to-transparent"></div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

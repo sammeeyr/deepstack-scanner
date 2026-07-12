@@ -17,7 +17,7 @@ app = FastAPI(title="SiteForge Recon API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -46,7 +46,7 @@ if SUPABASE_URL and SUPABASE_KEY:
 async def get_user_from_token(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid token")
+        return None
     
     token = auth_header.split(" ")[1]
     if not supabase:
@@ -112,4 +112,4 @@ async def analyze_url(req: AnalyzeRequest, request: Request):
         
     except Exception as e:
         print(f"Error analyzing {req.url}: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=400, detail=f"Could not reach or analyze the URL. Make sure it's a valid website. (Error: {str(e)})")

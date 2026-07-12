@@ -1,60 +1,79 @@
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 
-function generatePointsInSphere(count: number, radius: number) {
-  const points = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    const u = Math.random();
-    const v = Math.random();
-    const theta = u * 2.0 * Math.PI;
-    const phi = Math.acos(2.0 * v - 1.0);
-    const r = Math.cbrt(Math.random()) * radius;
-    
-    const sinPhi = Math.sin(phi);
-    const x = r * sinPhi * Math.cos(theta);
-    const y = r * sinPhi * Math.sin(theta);
-    const z = r * Math.cos(phi);
-    
-    points[i * 3] = x;
-    points[i * 3 + 1] = y;
-    points[i * 3 + 2] = z;
-  }
-  return points;
-}
+const CHARS = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-function StarField(props: any) {
+function MatrixStrand({ position, speed, length, size }: any) {
   const ref = useRef<any>(null);
-  // Generate 5000 random points in a sphere
-  const sphere = useMemo(() => generatePointsInSphere(5000, 1.5), []);
+  const text = useMemo(() => {
+    let str = '';
+    for (let i = 0; i < length; i++) {
+      str += CHARS[Math.floor(Math.random() * CHARS.length)] + '\n';
+    }
+    return str;
+  }, [length]);
 
   useFrame((_state, delta) => {
     if (ref.current) {
-      ref.current.rotation.x -= delta / 10;
-      ref.current.rotation.y -= delta / 15;
+      ref.current.position.y -= speed * delta;
+      // Reset position when it falls below screen
+      if (ref.current.position.y < -15) {
+        ref.current.position.y = 15 + Math.random() * 10;
+        // Optionally scramble text on reset
+      }
     }
   });
 
   return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false} {...props}>
-        <PointMaterial
-          transparent
-          color="#00f3ff"
-          size={0.005}
-          sizeAttenuation={true}
-          depthWrite={false}
-        />
-      </Points>
+    <Text
+      ref={ref}
+      position={position}
+      fontSize={size}
+      color="#00ff41"
+      anchorX="center"
+      anchorY="top"
+      lineHeight={0.8}
+      material-toneMapped={false}
+    >
+      {text}
+    </Text>
+  );
+}
+
+function MatrixRain() {
+  const strands = useMemo(() => {
+    const temp = [];
+    for (let i = 0; i < 80; i++) {
+      temp.push({
+        position: [
+          (Math.random() - 0.5) * 40, // x spread
+          Math.random() * 30 - 15,    // y spread
+          (Math.random() - 0.5) * 30 - 5, // z depth
+        ],
+        speed: 3 + Math.random() * 6,
+        length: 8 + Math.floor(Math.random() * 20),
+        size: 0.3 + Math.random() * 0.5,
+      });
+    }
+    return temp;
+  }, []);
+
+  return (
+    <group>
+      {strands.map((props, i) => (
+        <MatrixStrand key={i} {...props} />
+      ))}
     </group>
   );
 }
 
 export default function Background3D() {
   return (
-    <div className="fixed inset-0 z-[-1] bg-[#050505]">
-      <Canvas camera={{ position: [0, 0, 1] }}>
-        <StarField />
+    <div className="fixed inset-0 z-[-1] bg-[#030303]">
+      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+        <fog attach="fog" args={['#030303', 5, 30]} />
+        <MatrixRain />
       </Canvas>
     </div>
   );
