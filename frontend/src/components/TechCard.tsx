@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '../utils/cn';
+import { getUseCase } from '../utils/getUseCase';
 
 interface TechCardProps {
   name: string;
@@ -44,6 +45,13 @@ export function TechCard({ name, categories, versions, index }: TechCardProps) {
             {cat}
           </span>
         ))}
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-[#00ff41]/20 z-10 relative">
+        <p className="text-xs text-[#00ff41]/70 leading-relaxed font-mono">
+          <span className="font-bold text-[#00ff41]/90">USE CASE: </span> 
+          {getUseCase(name, categories)}
+        </p>
       </div>
     </motion.div>
   );
