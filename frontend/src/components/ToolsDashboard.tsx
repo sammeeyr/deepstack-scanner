@@ -116,11 +116,56 @@ export function ToolsDashboard({ session }: ToolsDashboardProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="border border-[#00ff41]/30 p-4 bg-black/50 font-mono text-sm overflow-x-auto"
+              className="border border-[#00ff41]/30 p-4 bg-black/50 font-mono text-sm overflow-x-auto w-full"
             >
-              <pre className="text-[#00ff41]">
-                {JSON.stringify(result, null, 2)}
-              </pre>
+              {activeTool === 'aidetect' ? (
+                <div className="flex flex-col gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-[#00ff41]/10 border border-[#00ff41]/30 p-4 flex flex-col items-center justify-center relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-[#00ff41]/50"></div>
+                      <span className="text-[#00ff41]/70 uppercase text-xs tracking-widest mb-2">Detection Status</span>
+                      <span className={`text-2xl font-bold ${result.is_ai_generated ? 'text-[#ff003c] drop-shadow-[0_0_8px_rgba(255,0,60,0.8)]' : 'text-[#00ff41]'}`}>
+                        {result.is_ai_generated ? 'AI DETECTED' : 'HUMAN WRITTEN'}
+                      </span>
+                    </div>
+                    <div className="bg-[#00ff41]/10 border border-[#00ff41]/30 p-4 flex flex-col items-center justify-center relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-[#00ff41]/50"></div>
+                      <span className="text-[#00ff41]/70 uppercase text-xs tracking-widest mb-2">Confidence Score</span>
+                      <span className="text-2xl font-bold text-[#00ff41]">{result.confidence || "0%"}</span>
+                    </div>
+                  </div>
+                  
+                  {result.tools_detected && result.tools_detected.length > 0 && (
+                    <div className="mt-2">
+                      <h3 className="text-[#00ff41] font-bold uppercase tracking-wider mb-4 border-b border-[#00ff41]/30 pb-2">Identified Signatures</h3>
+                      <div className="flex flex-wrap gap-4">
+                        {result.tools_detected.map((tool: string, idx: number) => (
+                          <motion.div 
+                            key={idx}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="bg-black/80 border border-[#00ff41] w-48 p-4 flex flex-col gap-2 shadow-[0_0_10px_rgba(0,255,65,0.2)] hover:shadow-[0_0_15px_rgba(0,255,65,0.4)] transition-shadow cursor-default relative overflow-hidden"
+                          >
+                            <div className="absolute top-0 left-0 w-1 h-full bg-[#00ff41]"></div>
+                            <span className="text-[#00ff41]/50 text-xs font-bold uppercase ml-2">Generator Tool</span>
+                            <span className="text-[#00ff41] font-bold text-lg ml-2 truncate" title={tool}>{tool}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {result.is_ai_generated && (!result.tools_detected || result.tools_detected.length === 0) && (
+                     <div className="text-[#00ff41]/70 text-center uppercase tracking-widest text-sm mt-4">
+                        AI signatures detected but specific generator tool could not be identified.
+                     </div>
+                  )}
+                </div>
+              ) : (
+                <pre className="text-[#00ff41]">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
