@@ -5,6 +5,7 @@ import { ScannerForm } from './components/ScannerForm';
 import { ResultsGrid } from './components/ResultsGrid';
 import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
+import { ToolsDashboard } from './components/ToolsDashboard';
 import { supabase } from './lib/supabase';
 import { LogOut } from 'lucide-react';
 
@@ -26,7 +27,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasScanned, setHasScanned] = useState(false);
-  const [view, setView] = useState<'scanner' | 'dashboard' | 'auth'>('scanner');
+  const [view, setView] = useState<'scanner' | 'dashboard' | 'auth' | 'tools'>('scanner');
   const [searchCount, setSearchCount] = useState(() => parseInt(localStorage.getItem('searchCount') || '0'));
 
   useEffect(() => {
@@ -98,6 +99,12 @@ function App() {
         >
           Scanner
         </button>
+        <button 
+          onClick={() => setView('tools')}
+          className={`font-bold tracking-widest uppercase transition-colors ${view === 'tools' ? 'text-[#00ff41] neon-text' : 'text-[#00ff41]/50 hover:text-[#00ff41]'}`}
+        >
+          Tools
+        </button>
         {session ? (
           <>
             <button 
@@ -154,6 +161,8 @@ function App() {
           </div>
         ) : session && view === 'dashboard' ? (
           <Dashboard />
+        ) : view === 'tools' ? (
+          <ToolsDashboard session={session} />
         ) : (
           <>
             <ScannerForm onScan={handleScan} isLoading={isLoading} />

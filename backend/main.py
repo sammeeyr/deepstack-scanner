@@ -6,6 +6,8 @@ from supabase import create_client, Client
 import warnings
 import os
 from dotenv import load_dotenv
+import socket
+import concurrent.futures
 
 load_dotenv()
 
@@ -113,3 +115,64 @@ async def analyze_url(req: AnalyzeRequest, request: Request):
     except Exception as e:
         print(f"Error analyzing {req.url}: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Could not reach or analyze the URL. Make sure it's a valid website. (Error: {str(e)})")
+
+
+class ToolRequest(BaseModel):
+    target: str
+
+@app.post("/api/tools/ipcheck")
+async def ipcheck_tool(req: ToolRequest, request: Request):
+    user = await get_user_from_token(request)
+    target = req.target.replace("http://", "").replace("https://", "").split("/")[0]
+    try:
+        ip_address = socket.gethostbyname(target)
+        return {"status": "success", "target": target, "ip": ip_address}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to resolve IP: {str(e)}")
+
+@app.post("/api/tools/portscan")
+async def portscan_tool(req: ToolRequest, request: Request):
+    user = await get_user_from_token(request)
+    target = req.target.replace("http://", "").replace("https://", "").split("/")[0]
+    common_ports = [21, 22, 23, 25, 53, 80, 110, 143, 443, 465, 587, 993, 995, 3306, 3389, 5432, 8080]
+    open_ports = []
+    
+    def check_port(port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex((target, port))
+        sock.close()
+        if result == 0:
+            return port
+        return None
+
+    try:
+        # Resolve target to IP first
+        ip_address = socket.gethostbyname(target)
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = executor.map(check_port, common_ports)
+            for port in results:
+                if port is not None:
+                    open_ports.append(port)
+                    
+        return {"status": "success", "target": target, "ip": ip_address, "open_ports": open_ports}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Port scan failed: {str(e)}")
+
+@app.post("/api/tools/dns")
+async def dns_tool(req: ToolRequest, request: Request):
+    user = await get_user_from_token(request)
+    target = req.target.replace("http://", "").replace("https://", "").split("/")[0]
+    try:
+        # Basic DNS info using socket
+        hostname, aliaslist, ipaddrlist = socket.gethostbyname_ex(target)
+        return {
+            "status": "success", 
+            "target": target, 
+            "hostname": hostname,
+            "aliases": aliaslist,
+            "ips": ipaddrlist
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"DNS lookup failed: {str(e)}")
