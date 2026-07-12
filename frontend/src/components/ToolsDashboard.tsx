@@ -6,7 +6,7 @@ interface ToolsDashboardProps {
 }
 
 export function ToolsDashboard({ session }: ToolsDashboardProps) {
-  const [activeTool, setActiveTool] = useState<'ipcheck' | 'portscan' | 'dns'>('ipcheck');
+  const [activeTool, setActiveTool] = useState<'ipcheck' | 'portscan' | 'dns' | 'aidetect'>('ipcheck');
   const [target, setTarget] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,13 +67,19 @@ export function ToolsDashboard({ session }: ToolsDashboardProps) {
         >
           DNS Lookup
         </button>
+        <button
+          onClick={() => { setActiveTool('aidetect'); setResult(null); setError(null); }}
+          className={`px-4 py-2 font-bold tracking-widest uppercase transition-colors ${activeTool === 'aidetect' ? 'text-[#00ff41] border-b-2 border-[#00ff41]' : 'text-[#00ff41]/50 hover:text-[#00ff41]'}`}
+        >
+          AI Detector
+        </button>
       </div>
 
       <div className="bg-black/80 border border-[#00ff41]/30 p-6 shadow-[0_0_15px_rgba(0,255,65,0.1)] relative overflow-hidden group">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00ff41] to-transparent opacity-50"></div>
         
         <h2 className="text-2xl font-bold mb-4 text-[#00ff41] uppercase tracking-wider">
-          {activeTool === 'ipcheck' ? 'IP Address Resolution' : activeTool === 'portscan' ? 'Common Port Scanner' : 'DNS Record Lookup'}
+          {activeTool === 'ipcheck' ? 'IP Address Resolution' : activeTool === 'portscan' ? 'Common Port Scanner' : activeTool === 'aidetect' ? 'AI Website Detector' : 'DNS Record Lookup'}
         </h2>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
